@@ -1157,17 +1157,21 @@
   });
 
   // ----------------------
-  // Web Audio + 녹음 + 파형
+  // Web Audio + 녹음 + 파형 (iOS 고려)
   // ----------------------
   let audioContext = null;
   let analyser = null;
   let mediaStream = null;
   let dataArray = null;
   let waveAnimationId = null;
-  let recordingChunks = [];
-  let mediaRecorder = null;
   let recordingStartTime = 0;
   let lastRMS = 0;
+
+  // MediaRecorder 지원 여부 (안 되면 iOS용 fallback)
+  const supportsMediaRecorder = typeof MediaRecorder !== "undefined";
+  let mediaRecorder = null;
+  let recordingChunks = [];
+  let hasSample = false; // 분석 가능 여부 플래그
 
   const waveformCanvas = document.getElementById("waveform");
   const canvasCtx = waveformCanvas.getContext("2d");
@@ -1250,29 +1254,40 @@
       }
 
       mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder = new MediaRecorder(mediaStream);
-      recordingChunks = [];
-      recordingStartTime = performance.now();
-
-      mediaRecorder.ondataavailable = event => {
-        if (event.data && event.data.size > 0) {
-          recordingChunks.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = () => {
-        btnAnalyze.disabled = recordingChunks.length === 0;
-        btnStart.disabled = false;
-        btnStop.disabled = true;
-      };
-
-      mediaRecorder.start();
 
       const source = audioContext.createMediaStreamSource(mediaStream);
       analyser = audioContext.createAnalyser();
       analyser.fftSize = 1024;
       source.connect(analyser);
+      recordingStartTime = performance.now();
+      hasSample = false;
+
       drawWaveform();
+
+      if (supportsMediaRecorder) {
+        // Android/데스크탑 등에서만 사용
+        mediaRecorder = new MediaRecorder(mediaStream);
+        recordingChunks = [];
+
+        mediaRecorder.ondataavailable = event => {
+          if (event.data && event.data.size > 0) {
+            recordingChunks.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          hasSample = recordingChunks.length > 0;
+          btnAnalyze.disabled = !hasSample;
+          btnStart.disabled = false;
+          btnStop.disabled = true;
+        };
+
+        mediaRecorder.start();
+      } else {
+        // iOS 대응: MediaRecorder 없이도 분석은 가능
+        logEvent("이 환경에서는 MediaRecorder가 없어도 실시간 파형으로 분석합니다.");
+      }
+
       logEvent("녹음을 시작했습니다.");
     } catch (err) {
       console.error("녹음 시작 실패:", err);
@@ -1288,10 +1303,20 @@
 
   function stopRecording() {
     const btnStop = document.getElementById("btnStopRecord");
+    const btnAnalyze = document.getElementById("btnAnalyze");
+    const btnStart = document.getElementById("btnStartRecord");
+
     btnStop.disabled = true;
-    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+
+    if (supportsMediaRecorder && mediaRecorder && mediaRecorder.state !== "inactive") {
       mediaRecorder.stop();
+    } else {
+      // iOS 등: MediaRecorder가 없으므로 여기서 샘플 확보 완료로 본다
+      hasSample = true;
+      btnAnalyze.disabled = false;
+      btnStart.disabled = false;
     }
+
     if (mediaStream) {
       mediaStream.getTracks().forEach(t => t.stop());
       mediaStream = null;
@@ -1304,7 +1329,7 @@
   }
 
   function analyzeRecording() {
-    if (!recordingChunks.length) {
+    if (!hasSample) {
       alert("먼저 녹음을 진행해 주세요.");
       return;
     }
@@ -1401,23 +1426,24 @@
   document.getElementById("btnStopRecord").addEventListener("click", stopRecording);
   document.getElementById("btnAnalyze").addEventListener("click", analyzeRecording);
 
-  setInterval(() => {
-    const btnAnalyze = document.getElementById("btnAnalyze");
-    if (mediaRecorder && mediaRecorder.state === "inactive" && recordingChunks.length > 0) {
-      btnAnalyze.disabled = false;
-    }
-  }, 1000);
-
   // ----------------------
-  // 진동 제어
+  // 진동 제어 (iOS 안내)
   // ----------------------
   const vibrationStatus = document.getElementById("vibrationStatus");
-  const supportsVibration = "vibrate" in navigator;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const supportsVibrationAPI = "vibrate" in navigator && !isIOS;
 
   if (vibrationStatus) {
-    vibrationStatus.textContent = supportsVibration
-      ? "이 기기는 진동 API를 지원합니다. 패턴 버튼을 눌러 진동을 느껴 보세요."
-      : "이 브라우저/기기는 진동 API를 지원하지 않습니다.";
+    if (isIOS) {
+      vibrationStatus.textContent =
+        "iOS(아이폰/아이패드)는 브라우저에서 진동 API를 지원하지 않습니다. 앱 버전에서 구현할 수 있습니다.";
+    } else if (supportsVibrationAPI) {
+      vibrationStatus.textContent =
+        "이 기기는 진동 API를 지원합니다. 패턴 버튼을 눌러 진동을 느껴 보세요.";
+    } else {
+      vibrationStatus.textContent =
+        "이 브라우저/기기는 진동 API를 지원하지 않습니다.";
+    }
   }
 
   document.querySelectorAll("button[data-vibrate]").forEach(btn => {
@@ -1425,8 +1451,8 @@
       state.usedModules.vibration = true;
       updateBadgesAndStats();
 
-      if (!supportsVibration) {
-        alert("이 브라우저는 진동을 지원하지 않습니다.");
+      if (!supportsVibrationAPI) {
+        alert("이 환경에서는 웹 진동을 사용할 수 없습니다. (iOS 또는 브라우저 제한)");
         return;
       }
       const type = btn.getAttribute("data-vibrate");
@@ -1490,6 +1516,7 @@
 
   updateMouthUI();
 
+  // 카메라
   let cameraStream = null;
   const cameraPreview = document.getElementById("cameraPreview");
   const cameraStatus = document.getElementById("cameraStatus");
