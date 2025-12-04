@@ -654,7 +654,7 @@
           <div class="card">
             <div class="card-header">
               <span class="card-title">연습 통계</span>
-              <span class="badge-soft">가상 발음 평가</span>
+              <span class="badge-soft">발음 연습 평가</span>
             </div>
             <div class="grid" style="grid-template-columns: repeat(2,minmax(0,1fr));gap:8px;">
               <div>
@@ -684,7 +684,7 @@
 
           <div class="card">
             <div class="card-header">
-              <span class="card-title">사용한 모듈</span>
+              <span class="card-title">학습한 모듈</span>
               <span class="badge-soft">다중감각 학습</span>
             </div>
             <div class="pill-group">
@@ -693,7 +693,7 @@
               <span class="pill" id="usedLipreading">👄 립리딩</span>
             </div>
             <button id="btnResetProgress" class="btn small subtle" style="margin-top:6px;">
-              진행도 초기화
+              모든 진행도 초기화
             </button>
           </div>
         </div>
@@ -720,11 +720,11 @@
           <input
             id="targetSentence"
             type="text"
-            value="오늘은 발음과 리듬을 연습해 볼까요?"
+            value="연습하고 싶은 문장을 입력하세요."
             placeholder="연습하고 싶은 문장을 입력하세요"
           />
           <p class="hint">
-            문장을 바꿔도 괜찮아요. <strong>녹음 시작 → 말하기 → 녹음 종료 → 분석</strong> 순서로 사용합니다.
+            문장을 바꿔도 괜찮아요. <strong>녹음 시작 → 말하기 → 녹음 종료 → 분석</strong> 순서로 진행됩니다.
           </p>
           <p id="modeExplainPronunciation" class="hint"></p>
 
@@ -871,14 +871,14 @@
 
         <div class="card">
           <div class="card-header">
-            <span class="card-title">데모 설명</span>
+            <span class="card-title">데모 모델 설명</span>
             <span class="badge-soft">주의</span>
           </div>
           <ul style="margin:4px 0 0 16px;font-size:12px;color:var(--text-muted);padding-left:8px;">
             <li>발음 평가는 <strong>연구용/시연용 모의 알고리즘</strong>으로, 실제 진단 도구가 아닙니다.</li>
-            <li>점수는 발화 길이, 볼륨, (지원 브라우저 한정) 목표 문장과의 텍스트 유사도를 조합해 계산합니다.</li>
-            <li>실제 서비스에서는 별도의 AI 서버와 보안 정책, 학습 데이터 관리 체계를 보완할 예정입니다.</li>
-            <li>iOS와 MacOS 환경에서는 서비스가 정상적으로 작동하지 않을 수 있습니다.</li>
+            <li>점수는 발화 길이, 볼륨, 목표 문장과의 텍스트 유사도를 조합해 계산합니다. (AI 기능을 아직 추가하지 않아, 임의로 점수를 설정했습니다.)</li>
+            <li>실제 서비스에서는 별도의 AI 서버와 보안 정책, 학습 데이터 관리 체계를 보완해야 합니다.</li>
+            <li>iOS와 MacOS 등 특정 환경에서는 일부 서비스가 정상적으로 작동하지 않을 수 있습니다.</li>
           </ul>
         </div>
       </section>
@@ -1115,17 +1115,17 @@
       } else if (mode === "deaf") {
         if (level === "mild") {
           pronText =
-            "청각장애 중심 모드 · 경도/부분 난청 프로필입니다. 들리는 소리와 파형·텍스트를 함께 보며, 시각적 피드백을 보조 도구로 사용하는 연습에 초점을 둡니다.";
+            "청각장애 중심 모드 · 경도/부분 난청 모드입니다. 들리는 소리와 파형·텍스트를 함께 보며, 시각적 피드백을 보조 도구로 사용하는 연습에 초점을 둡니다.";
           teacherText =
             "경도/부분 난청 프로필: 일반 음성 정보에 접근은 가능하지만, 소음·교실 환경에서 시각 피드백이 얼마나 도움을 주는지에 주목하여 데이터를 해석할 수 있습니다.";
         } else if (level === "moderate") {
           pronText =
-            "청각장애 중심 모드 · 중등도 프로필입니다. 파형·주파수·텍스트 피드백을 동시에 활용하며, 소리 없이도 발음 구조를 파악할 수 있도록 설계된 연습을 가정합니다.";
+            "청각장애 중심 모드 · 중등도 모드입니다. 파형·주파수·텍스트 피드백을 동시에 활용하며, 소리 없이도 발음 구조를 파악할 수 있도록 설계된 연습을 가정합니다.";
           teacherText =
             "중등도 프로필: 보조기기·자막과 함께 다중감각 피드백을 병행하는 상황을 가정하며, 시각·촉각 피드백의 기여도를 관찰하는 데 적합합니다.";
         } else {
           pronText =
-            "청각장애 중심 모드 · 고도·농 수준 프로필입니다. 소리를 듣지 못해도 파형·주파수·진동 피드백만으로 발음과 리듬을 이해하는 연습에 초점을 둡니다.";
+            "청각장애 중심 모드 · 고도·농 수준 모드입니다. 소리를 듣지 못해도 파형·주파수·진동 피드백만으로 발음과 리듬을 이해하는 연습에 초점을 둡니다.";
           teacherText =
             "고도·농 수준 프로필: 청각 정보 없이도 의사소통이 가능하도록, 시각·촉각 채널만으로 발음 피드백을 구성했을 때의 한계와 가능성을 살펴볼 수 있습니다.";
         }
