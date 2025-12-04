@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>SoundStudy for All · 데모</title>
+  <title>SoundStudy for All by 정도현 김채정 임지언 (Demo ver.)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     :root {
@@ -570,16 +570,8 @@
         <div class="logo-circle">S</div>
         <div>
           <h1>SoundStudy for All · 데모</h1>
-          <p class="tagline">"들을 수 없어도, 발음과 리듬을 시각·촉각으로 경험할 수 있는 연습 공간"</p>
+          <p class="tagline">모든 학생을 위한 다중감각 언어 학습 플랫폼</p>
         </div>
-      </div>
-
-      <div class="chip-row">
-        <span class="chip primary">시각적 피드백</span>
-        <span class="chip">진동 기반 리듬</span>
-        <span class="chip">AI 발음 분석(데모)</span>
-        <span class="chip">립리딩 학습</span>
-        <span class="chip">게이미피케이션</span>
       </div>
 
       <!-- 학습자 모드 -->
@@ -613,7 +605,7 @@
           <span class="icon">👄</span> 립리딩
         </button>
         <button class="nav-btn" data-target="panel-teacher">
-          <span class="icon">📚</span> 교사 보기
+          <span class="icon">📚</span> 학습 현황
         </button>
       </nav>
     </header>
@@ -709,11 +701,11 @@
           <input
             id="targetSentence"
             type="text"
-            value="오늘은 발음과 리듬을 연습해 볼까요?"
+            value="연습하고 싶은 문장을 입력하세요"
             placeholder="연습하고 싶은 문장을 입력하세요"
           />
           <p class="hint">
-            문장을 바꿔도 괜찮아요. <strong>녹음 시작 → 말하기 → 녹음 종료 → 분석</strong> 순서로 사용합니다.
+            문장을 바꿔도 괜찮아요. <strong>녹음 시작 → 말하기 → 녹음 종료 → 분석</strong> 순서로 진행됩니다.
           </p>
           <p id="modeExplainPronunciation" class="hint"></p>
 
@@ -839,10 +831,10 @@
 
       <!-- TEACHER VIEW -->
       <section id="panel-teacher" class="panel" hidden>
-        <h2>교사 보기 (로컬 데모)</h2>
+        <h2>학습 현황</h2>
         <p class="panel-subtitle">
-          이 화면은 실제 수업에서 교사가 보는 것처럼, 학생의 발음 시도 기록과 점수를 가볍게 모의 체험하는 용도입니다.
-          모든 데이터는 <strong>브라우저에만 로컬 저장</strong>되며 서버로 전송되지 않습니다.
+          학생의 발음 시도 기록과 점수를 확인하는 기능입니다.
+          모든 데이터는 <strong>브라우저에 로컬 저장</strong>되며, 필요 시 교사와 공유할 수 있습니다.
         </p>
         <p id="modeExplainTeacher" class="hint"></p>
 
@@ -857,7 +849,7 @@
                 <tr>
                   <th style="width:70px;">시간</th>
                   <th>목표 문장</th>
-                  <th>인식된 문장(지원 브라우저)</th>
+                  <th>인식된 문장</th>
                   <th class="text-right" style="width:60px;">점수</th>
                   <th class="text-right" style="width:60px;">길이(s)</th>
                 </tr>
@@ -869,13 +861,14 @@
 
         <div class="card">
           <div class="card-header">
-            <span class="card-title">데모 설명</span>
+            <span class="card-title">데모 버전 설명</span>
             <span class="badge-soft">주의</span>
           </div>
           <ul style="margin:4px 0 0 16px;font-size:12px;color:var(--text-muted);padding-left:8px;">
-            <li>발음 평가는 <strong>연구용/시연용 모의 알고리즘</strong>으로, 실제 진단 도구가 아닙니다.</li>
-            <li>점수는 발화 길이, 볼륨, (지원 브라우저에서는) 목표 문장과의 텍스트 유사도를 조합해 계산합니다.</li>
-            <li>실제 서비스에서는 별도의 AI 서버와 보안 정책, 학습 데이터 관리 체계가 추가로 필요합니다.</li>
+            <li>발음 평가는 <strong>과제를 위한 모의 알고리즘</strong>으로, 실제 진단 도구가 아닙니다.<li>
+            <li>개발 환경의 한계로 AI를 사용한 기능은 실제가 아닌 모의로 구현했습니다.<li>
+            <li>이후 발화 길이, 볼륨, 목표 문장과의 텍스트 유사도를 조합한 점수를 AI로 제공할 예정입니다.<li>
+            <li>iOS, MacOS 등 특정 환경에서는 일부 서비스가 작동하지 않을 수 있습니다.</li>
           </ul>
         </div>
       </section>
